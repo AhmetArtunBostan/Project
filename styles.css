@@ -87,9 +87,30 @@ input, textarea {
     display: none !important;
 }
 
+.camera-controls {
+    margin: 1rem 0;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+#cameraPreview {
+    margin: 1rem 0;
+    text-align: center;
+}
+
+#videoElement {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 8px;
+    background-color: #000;
+}
+
 #photoPreview {
-    max-width: 100%;
-    border-radius: 4px;
+    width: 100%;
+    max-width: 640px;
+    border-radius: 8px;
+    margin: 1rem 0;
 }
 
 #offlineMessage {
@@ -103,12 +124,6 @@ input, textarea {
 #cameraContainer {
     margin: 1rem 0;
     text-align: center;
-}
-
-#cameraPreview {
-    border-radius: 4px;
-    background-color: #000;
-    margin-bottom: 1rem;
 }
 
 #captureBtn {

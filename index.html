@@ -33,7 +33,13 @@
                 <form id="noteForm">
                     <input type="text" id="noteTitle" placeholder="Note Title" required>
                     <textarea id="noteContent" placeholder="Note Content" required></textarea>
-                    <button type="button" id="takePhotoBtn">📸 Take Photo</button>
+                    <div class="camera-controls">
+                        <button type="button" id="startCameraBtn">📸 Start Camera</button>
+                        <button type="button" id="takePictureBtn" class="hidden">📷 Take Picture</button>
+                    </div>
+                    <div id="cameraPreview" class="hidden">
+                        <video id="videoElement" autoplay playsinline></video>
+                    </div>
                     <img id="photoPreview" class="hidden">
                     <button type="submit">Save Note</button>
                 </form>

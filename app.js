@@ -8,13 +8,13 @@ const addNoteView = document.getElementById('addNoteView');
 const settingsView = document.getElementById('settingsView');
 const notesList = document.getElementById('notesList');
 const noteForm = document.getElementById('noteForm');
-const takePhotoBtn = document.getElementById('takePhotoBtn');
+const startCameraBtn = document.getElementById('startCameraBtn');
+const takePictureBtn = document.getElementById('takePictureBtn');
+const videoElement = document.getElementById('videoElement');
+const cameraPreview = document.getElementById('cameraPreview');
 const photoPreview = document.getElementById('photoPreview');
 const installBtn = document.getElementById('installBtn');
 const offlineMessage = document.getElementById('offlineMessage');
-const cameraContainer = document.getElementById('cameraContainer');
-const cameraPreview = document.getElementById('cameraPreview');
-const captureBtn = document.getElementById('captureBtn');
 let stream = null;
 
 // Navigation
@@ -38,43 +38,23 @@ function showView(viewId) {
 }
 
 // Camera functionality
-async function initCamera() {
+async function startCamera() {
     try {
-        const constraints = {
+        // Get camera stream
+        stream = await navigator.mediaDevices.getUserMedia({
             video: {
-                width: { ideal: 640 },
-                height: { ideal: 480 },
-                facingMode: "user"
+                facingMode: 'environment',
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
             }
-        };
-
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        
-        // Create temporary elements
-        const tempVideo = document.createElement('video');
-        tempVideo.setAttribute('autoplay', '');
-        tempVideo.setAttribute('playsinline', '');
-        tempVideo.srcObject = stream;
-        
-        // Wait for video to be ready
-        await new Promise((resolve) => {
-            tempVideo.onloadedmetadata = () => {
-                tempVideo.play().then(resolve);
-            };
         });
 
-        // Create canvas and capture image
-        const canvas = document.createElement('canvas');
-        canvas.width = tempVideo.videoWidth;
-        canvas.height = tempVideo.videoHeight;
-        canvas.getContext('2d').drawImage(tempVideo, 0, 0);
-
-        // Stop camera
-        stream.getTracks().forEach(track => track.stop());
-
-        // Show captured photo
-        photoPreview.src = canvas.toDataURL('image/jpeg');
-        photoPreview.classList.remove('hidden');
+        // Show video preview
+        videoElement.srcObject = stream;
+        cameraPreview.classList.remove('hidden');
+        takePictureBtn.classList.remove('hidden');
+        startCameraBtn.classList.add('hidden');
+        photoPreview.classList.add('hidden');
 
     } catch (error) {
         console.error('Camera error:', error);
@@ -82,7 +62,28 @@ async function initCamera() {
     }
 }
 
-takePhotoBtn.addEventListener('click', initCamera);
+function takePicture() {
+    // Create canvas and capture image
+    const canvas = document.createElement('canvas');
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    canvas.getContext('2d').drawImage(videoElement, 0, 0);
+
+    // Stop camera stream
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+
+    // Show captured photo
+    photoPreview.src = canvas.toDataURL('image/jpeg');
+    photoPreview.classList.remove('hidden');
+    cameraPreview.classList.add('hidden');
+    takePictureBtn.classList.add('hidden');
+    startCameraBtn.classList.remove('hidden');
+}
+
+startCameraBtn.addEventListener('click', startCamera);
+takePictureBtn.addEventListener('click', takePicture);
 
 // Geolocation
 async function getCurrentLocation() {
