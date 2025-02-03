@@ -51,9 +51,12 @@ async function startCamera() {
 
         // Show video preview
         videoElement.srcObject = stream;
+        await videoElement.play(); // Ensure video is playing
+
+        // Show camera UI
         cameraPreview.classList.remove('hidden');
         takePictureBtn.classList.remove('hidden');
-        startCameraBtn.classList.add('hidden');
+        startCameraBtn.textContent = '🔄 Switch Camera';
         photoPreview.classList.add('hidden');
 
     } catch (error) {
@@ -63,23 +66,31 @@ async function startCamera() {
 }
 
 function takePicture() {
-    // Create canvas and capture image
-    const canvas = document.createElement('canvas');
-    canvas.width = videoElement.videoWidth;
-    canvas.height = videoElement.videoHeight;
-    canvas.getContext('2d').drawImage(videoElement, 0, 0);
+    try {
+        // Create canvas and capture image
+        const canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        canvas.getContext('2d').drawImage(videoElement, 0, 0);
 
-    // Stop camera stream
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        // Show captured photo
+        photoPreview.src = canvas.toDataURL('image/jpeg');
+        photoPreview.classList.remove('hidden');
+        
+        // Stop camera stream
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        // Reset UI
+        cameraPreview.classList.add('hidden');
+        takePictureBtn.classList.add('hidden');
+        startCameraBtn.textContent = '📸 Start Camera';
+        startCameraBtn.classList.remove('hidden');
+    } catch (error) {
+        console.error('Error taking picture:', error);
+        alert('Fotoğraf çekilirken bir hata oluştu.');
     }
-
-    // Show captured photo
-    photoPreview.src = canvas.toDataURL('image/jpeg');
-    photoPreview.classList.remove('hidden');
-    cameraPreview.classList.add('hidden');
-    takePictureBtn.classList.add('hidden');
-    startCameraBtn.classList.remove('hidden');
 }
 
 startCameraBtn.addEventListener('click', startCamera);
