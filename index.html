@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Notes</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="theme-color" content="#2196f3">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Smart Notes</h1>
+            <nav>
+                <button id="notesBtn" class="active">Notes</button>
+                <button id="addNoteBtn">Add Note</button>
+                <button id="settingsBtn">Settings</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Notes View -->
+            <section id="notesView" class="view active">
+                <div id="notesList"></div>
+                <div id="offlineMessage" class="hidden">
+                    You are currently offline. Some features may be limited.
+                </div>
+            </section>
+
+            <!-- Add Note View -->
+            <section id="addNoteView" class="view">
+                <form id="noteForm">
+                    <input type="text" id="noteTitle" placeholder="Note Title" required>
+                    <textarea id="noteContent" placeholder="Note Content" required></textarea>
+                    <button type="button" id="takePhotoBtn">📸 Take Photo</button>
+                    <img id="photoPreview" class="hidden">
+                    <button type="submit">Save Note</button>
+                </form>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settingsView" class="view">
+                <h2>Settings</h2>
+                <div class="setting-item">
+                    <button id="installBtn" class="hidden">Install App</button>
+                </div>
+                <div class="setting-item">
+                    <label>Theme:</label>
+                    <select id="themeSelect">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+    <script src="tests.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('ServiceWorker registered'))
+                .catch(err => console.error('ServiceWorker registration failed:', err));
+        }
+    </script>
+</body>
+</html>
