@@ -22,7 +22,20 @@
         <main>
             <!-- Notes View -->
             <section id="notesView" class="view active">
-                <div id="notesList"></div>
+                <div id="notesList">
+                    <!-- Notes will be added here dynamically -->
+                </div>
+                <template id="noteTemplate">
+                    <div class="note-item">
+                        <h3 class="note-title"></h3>
+                        <p class="note-content"></p>
+                        <img class="note-photo hidden">
+                        <p class="note-location hidden"></p>
+                        <div class="note-actions">
+                            <button class="delete-note"> Sil</button>
+                        </div>
+                    </div>
+                </template>
                 <div id="offlineMessage" class="hidden">
                     You are currently offline. Some features may be limited.
                 </div>
@@ -34,8 +47,8 @@
                     <input type="text" id="noteTitle" placeholder="Note Title" required>
                     <textarea id="noteContent" placeholder="Note Content" required></textarea>
                     <div class="camera-controls">
-                        <button type="button" id="startCameraBtn">📸 Start Camera</button>
-                        <button type="button" id="takePictureBtn" class="hidden">📷 Take Picture</button>
+                        <button type="button" id="startCameraBtn"> Start Camera</button>
+                        <button type="button" id="takePictureBtn" class="hidden"> Take Picture</button>
                     </div>
                     <div id="cameraPreview" class="hidden">
                         <video id="videoElement" autoplay playsinline muted></video>

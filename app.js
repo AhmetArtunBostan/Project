@@ -112,52 +112,79 @@ async function getCurrentLocation() {
     }
 }
 
+// Load and display notes
+function loadNotes() {
+    const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+    const notesList = document.getElementById('notesList');
+    const template = document.getElementById('noteTemplate');
+    
+    notesList.innerHTML = '';
+    
+    notes.forEach((note, index) => {
+        const noteElement = template.content.cloneNode(true);
+        
+        noteElement.querySelector('.note-title').textContent = note.title;
+        noteElement.querySelector('.note-content').textContent = note.content;
+        
+        const photoElement = noteElement.querySelector('.note-photo');
+        if (note.photo) {
+            photoElement.src = note.photo;
+            photoElement.classList.remove('hidden');
+        }
+        
+        const locationElement = noteElement.querySelector('.note-location');
+        if (note.location) {
+            locationElement.textContent = `📍 ${note.location}`;
+            locationElement.classList.remove('hidden');
+        }
+        
+        // Add delete functionality
+        const deleteBtn = noteElement.querySelector('.delete-note');
+        deleteBtn.addEventListener('click', () => deleteNote(index));
+        
+        notesList.appendChild(noteElement);
+    });
+}
+
+// Delete note
+function deleteNote(index) {
+    if (confirm('Bu notu silmek istediğinizden emin misiniz?')) {
+        const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+        notes.splice(index, 1);
+        localStorage.setItem('notes', JSON.stringify(notes));
+        loadNotes();
+    }
+}
+
 // Note Form Submission
 noteForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const title = document.getElementById('noteTitle').value;
     const content = document.getElementById('noteContent').value;
-    const photo = photoPreview.src;
-    const location = await getCurrentLocation();
+    const photo = photoPreview.classList.contains('hidden') ? null : photoPreview.src;
     
-    const note = {
-        id: Date.now(),
-        title,
-        content,
-        photo,
-        location,
-        timestamp: new Date().toISOString()
-    };
+    let location = null;
+    try {
+        const position = await getCurrentLocation();
+        location = `${position.coords.latitude}, ${position.coords.longitude}`;
+    } catch (error) {
+        console.log('Location not available');
+    }
     
-    // Save note to localStorage
     const notes = JSON.parse(localStorage.getItem('notes') || '[]');
-    notes.push(note);
+    notes.push({ title, content, photo, location, timestamp: new Date().toISOString() });
     localStorage.setItem('notes', JSON.stringify(notes));
     
     // Reset form
     noteForm.reset();
-    photoPreview.src = '';
     photoPreview.classList.add('hidden');
+    photoPreview.src = '';
     
-    // Show notes view
+    // Switch to notes view and reload notes
     showView('notesView');
-    displayNotes();
+    loadNotes();
 });
-
-// Display Notes
-function displayNotes() {
-    const notes = JSON.parse(localStorage.getItem('notes') || '[]');
-    notesList.innerHTML = notes.map(note => `
-        <div class="note-card">
-            <h3>${note.title}</h3>
-            <p>${note.content}</p>
-            ${note.photo ? `<img src="${note.photo}" alt="Note photo" style="max-width: 100%;">` : ''}
-            ${note.location ? `<p> Location: ${note.location.latitude.toFixed(4)}, ${note.location.longitude.toFixed(4)}</p>` : ''}
-            <p><small>${new Date(note.timestamp).toLocaleString()}</small></p>
-        </div>
-    `).join('');
-}
 
 // Install PWA
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -196,7 +223,7 @@ themeSelect.addEventListener('change', (e) => {
 
 // Initialize
 function init() {
-    displayNotes();
+    loadNotes();
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
         themeSelect.value = savedTheme;

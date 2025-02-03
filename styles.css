@@ -157,6 +157,58 @@ input, textarea {
     opacity: 0.9;
 }
 
+.note-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.note-title {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-color);
+}
+
+.note-content {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+}
+
+.note-photo {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.note-location {
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    margin: 0.5rem 0;
+}
+
+.note-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.delete-note {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.delete-note:hover {
+    opacity: 0.9;
+}
+
 @media (max-width: 600px) {
     #app {
         padding: 10px;
