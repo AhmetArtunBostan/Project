@@ -1,4 +1,6 @@
 # Smart Notes PWA
+Ahmet Artun Bostan
+39810
 
 A Progressive Web Application for taking notes with photos and location support.
 

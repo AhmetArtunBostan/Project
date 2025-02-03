@@ -12,6 +12,10 @@ const takePhotoBtn = document.getElementById('takePhotoBtn');
 const photoPreview = document.getElementById('photoPreview');
 const installBtn = document.getElementById('installBtn');
 const offlineMessage = document.getElementById('offlineMessage');
+const cameraContainer = document.getElementById('cameraContainer');
+const cameraPreview = document.getElementById('cameraPreview');
+const captureBtn = document.getElementById('captureBtn');
+let stream = null;
 
 // Navigation
 document.querySelectorAll('nav button').forEach(button => {
@@ -36,26 +40,45 @@ function showView(viewId) {
 // Camera functionality
 async function initCamera() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const videoElement = document.createElement('video');
-        videoElement.srcObject = stream;
-        videoElement.play();
+        const constraints = {
+            video: {
+                width: { ideal: 640 },
+                height: { ideal: 480 },
+                facingMode: "user"
+            }
+        };
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         
-        // Take photo
+        // Create temporary elements
+        const tempVideo = document.createElement('video');
+        tempVideo.setAttribute('autoplay', '');
+        tempVideo.setAttribute('playsinline', '');
+        tempVideo.srcObject = stream;
+        
+        // Wait for video to be ready
+        await new Promise((resolve) => {
+            tempVideo.onloadedmetadata = () => {
+                tempVideo.play().then(resolve);
+            };
+        });
+
+        // Create canvas and capture image
         const canvas = document.createElement('canvas');
-        canvas.width = 320;
-        canvas.height = 240;
-        canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-        
-        const photo = canvas.toDataURL('image/jpeg');
-        photoPreview.src = photo;
-        photoPreview.classList.remove('hidden');
-        
-        // Stop camera stream
+        canvas.width = tempVideo.videoWidth;
+        canvas.height = tempVideo.videoHeight;
+        canvas.getContext('2d').drawImage(tempVideo, 0, 0);
+
+        // Stop camera
         stream.getTracks().forEach(track => track.stop());
+
+        // Show captured photo
+        photoPreview.src = canvas.toDataURL('image/jpeg');
+        photoPreview.classList.remove('hidden');
+
     } catch (error) {
-        console.error('Error accessing camera:', error);
-        alert('Could not access camera. Please make sure you have granted camera permissions.');
+        console.error('Camera error:', error);
+        alert('Kamera erişimi sağlanamadı. Lütfen kamera izinlerini kontrol edin.');
     }
 }
 
@@ -118,7 +141,7 @@ function displayNotes() {
             <h3>${note.title}</h3>
             <p>${note.content}</p>
             ${note.photo ? `<img src="${note.photo}" alt="Note photo" style="max-width: 100%;">` : ''}
-            ${note.location ? `<p>📍 Location: ${note.location.latitude.toFixed(4)}, ${note.location.longitude.toFixed(4)}</p>` : ''}
+            ${note.location ? `<p> Location: ${note.location.latitude.toFixed(4)}, ${note.location.longitude.toFixed(4)}</p>` : ''}
             <p><small>${new Date(note.timestamp).toLocaleString()}</small></p>
         </div>
     `).join('');
